@@ -29,7 +29,25 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
+      box: {},
     }
+  }
+
+  calculateFaceLocation = data => {
+    const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('inputImage');
+    const width = Number(image.width);
+    const height = Number(image.height);
+    return {
+      leftCol: face.left_col * width,
+      topRow: face.top_row * height,
+      rightCol: width - (face.right_col * width),
+      bottomRow: height - (face.bottom_row * height),
+    }
+  }
+
+  renderFaceBox = box => {
+    this.setState({box: box});
   }
 
   onInputChange = (e) => {
@@ -40,19 +58,17 @@ class App extends Component {
     // imageUrl used for displaying the image on the page, NOT for sending to the API
     this.setState({imageUrl: this.state.input})
 
-    try {
-      const faceDetectModel = await app.models.initModel({id: Clarifai.FACE_DETECT_MODEL})
-      // we have to use the input state here, not the imageUrl. setState() is asynchronous, React bundles calls to
-      // setState() together and updates the state in batches for performance reasons, so it will not have finished
-      // updating the imageUrl state when we call the predict API.
-      // https://reactjs.org/docs/react-component.html#setstate
-      const response = await faceDetectModel.predict(this.state.input)
-      console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-    }
-    catch(error) { console.error(error) }
+    // we have to use the input state here, not the imageUrl. setState() is asynchronous, React bundles calls to
+    // setState() together and updates the state in batches for performance reasons, so it will not have finished
+    // updating the imageUrl state when we call the predict API.
+    // https://reactjs.org/docs/react-component.html#setstate
+    app.models.predict(
+      Clarifai.FACE_DETECT_MODEL,
+      this.state.input)
+      .then(response => this.renderFaceBox(this.calculateFaceLocation(response)))
+      .catch(err => console.error(err));
 }
 
-  // TODO: work out why this makes my fans go crazy!
   render() {
     return (
       <div className="App">
@@ -67,7 +83,10 @@ class App extends Component {
           onInputChange={this.onInputChange}
           onButtonSubmit={this.onButtonSubmit}
         />
-        <FaceRecognition imageUrl={this.state.imageUrl} />
+        <FaceRecognition
+          imageUrl={this.state.imageUrl}
+          box={this.state.box}
+        />
       </div>
     );
   }
