@@ -1,39 +1,35 @@
 import React, { Component } from 'react';
 
-class Signin extends Component {
+class Signin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       signInEmail: '',
       signInPassword: '',
     }
-  };
+  }
 
-  onEmailChange = event => {
-    this.setState({ signInEmail: event.target.value });
-  };
+  onEmailChange = (event) => this.setState({signInEmail: event.target.value});
 
-  onPasswordChange = event => {
-    this.setState({ signInPassword: event.target.value });
-  };
+  onPasswordChange = (event) => this.setState({signInPassword: event.target.value});
 
-  onSubmitSignIn = () => {
+  onSubmitSignin = () => {
     fetch('http://localhost:3000/signin', {
       method: 'post',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       body: JSON.stringify({
         email: this.state.signInEmail,
         password: this.state.signInPassword,
-      })
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
       .then(resp => resp.json())
       .then(data => {
-        if (data === 'Success!') {
+        if (data === 'success') {
           this.props.onRouteChange('home');
         }
-      })
+      });
   };
 
   render() {
@@ -65,13 +61,8 @@ class Signin extends Component {
                 />
               </div>
             </fieldset>
-            <div>
-              <input
-                onClick={this.onSubmitSignIn}
-                className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
-                type="submit"
-                value="Sign in"
-              />
+            <div className="">
+              <input onClick={this.onSubmitSignin} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="submit" value="Sign in" />
             </div>
             <div className="lh-copy mt3">
               <p onClick={() => onRouteChange('register')} href="#0" className="f6 link dim black db pointer">Register</p>
@@ -81,6 +72,6 @@ class Signin extends Component {
       </article>
     );
   };
-};
+}
 
 export default Signin;
