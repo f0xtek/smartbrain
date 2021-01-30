@@ -1,16 +1,17 @@
 import React from "react";
+import CapitalizedText from '../CapitalizedText/CapitalizedText'
 
-const Rank = () => {
+const Rank = ({ name, entries }) => {
     return (
         <div>
             <div className='f3 white'>
-                {'Luke, your current rank is...'}
+                <CapitalizedText text={name}/>{', your current image recognition count is...'}
             </div>
             <div className='f2 white'>
-                {'#1'}
+                {entries}
             </div>
         </div>
     )
-}
+};
 
 export default Rank;
