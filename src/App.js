@@ -10,7 +10,7 @@ import Particles from 'react-particles-js';
 import './App.css';
 import Clarifai from 'clarifai';
 
-const CLARIFAI_API_KEY = 'CLARIFAI API KEY';
+const CLARIFAI_API_KEY = process.env.REACT_APP_CLARIFAI_API_KEY;
 const app = new Clarifai.App({apiKey: CLARIFAI_API_KEY});
 
 const particleParams = {
